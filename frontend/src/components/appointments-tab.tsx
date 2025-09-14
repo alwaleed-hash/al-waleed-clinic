@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { type Booking, type BookingsApiResponse } from "../lib/types";
-import { getStatusBadgeClass } from "../lib/utils";
+import { getAppointmentStatusBadgeClass } from "../lib/utils";
 import Loader from "./loader";
 
 const AppointmentsTab = () => {
@@ -151,7 +151,11 @@ const AppointmentsTab = () => {
                       </td>
 
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={getStatusBadgeClass(booking.status)}>
+                        <span
+                          className={getAppointmentStatusBadgeClass(
+                            booking.status
+                          )}
+                        >
                           {booking.status}
                         </span>
                       </td>

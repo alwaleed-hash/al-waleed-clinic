@@ -6,13 +6,9 @@ const router = Router();
 // GET /api/patients - Get all patients
 router.get("/", async (req, res) => {
   try {
-    console.log("🔍 Fetching all patients...");
-
     const db = getDb();
     const patientsCollection = db.collection("patients");
     const patients = await patientsCollection.find({}).toArray();
-
-    console.log(`📋 Found ${patients.length} patients`);
 
     res.status(200).json({
       success: true,
@@ -31,8 +27,6 @@ router.get("/", async (req, res) => {
 // GET /api/patients/search/:query - Search patients by phone number or serial code
 router.get("/search/:query", async (req, res) => {
   try {
-    console.log("🔍 Searching patients...");
-
     const db = getDb();
     const patientsCollection = db.collection("patients");
     const { query } = req.params;
@@ -42,9 +36,6 @@ router.get("/search/:query", async (req, res) => {
         error: "Search query must be at least 2 characters long",
       });
     }
-
-    console.log("🔎 Search query:", query);
-
     // Create search regex for partial matching
     const searchRegex = new RegExp(query.trim(), "i");
 
@@ -53,8 +44,6 @@ router.get("/search/:query", async (req, res) => {
         $or: [{ phone_number: searchRegex }, { serial_code: searchRegex }],
       })
       .toArray();
-
-    console.log(`📋 Found ${patients.length} patients matching "${query}"`);
 
     res.status(200).json({
       success: true,
@@ -74,8 +63,6 @@ router.get("/search/:query", async (req, res) => {
 // GET /api/patients/phone/:phone - Get patient by phone number
 router.get("/phone/:phone", async (req, res) => {
   try {
-    console.log("🔍 Fetching patient by phone number...");
-
     const db = getDb();
     const patientsCollection = db.collection("patients");
     const { phone } = req.params;
@@ -83,9 +70,6 @@ router.get("/phone/:phone", async (req, res) => {
     if (!phone) {
       return res.status(400).json({ error: "Phone number is required" });
     }
-
-    console.log("📞 Phone number:", phone);
-
     const patient = await patientsCollection.findOne({ phone_number: phone });
 
     if (!patient) {
@@ -95,8 +79,6 @@ router.get("/phone/:phone", async (req, res) => {
         phone_number: phone,
       });
     }
-
-    console.log("📋 Patient found:", patient._id);
 
     res.status(200).json({
       success: true,
@@ -115,8 +97,6 @@ router.get("/phone/:phone", async (req, res) => {
 // GET /api/patients/:id - Get patient by ID
 router.get("/:id", async (req, res) => {
   try {
-    console.log("🔍 Fetching patient by ID...");
-
     const db = getDb();
     const patientsCollection = db.collection("patients");
     const { id } = req.params;
@@ -124,8 +104,6 @@ router.get("/:id", async (req, res) => {
     if (!id) {
       return res.status(400).json({ error: "Patient ID is required" });
     }
-
-    console.log("🆔 Patient ID:", id);
 
     // Try to find by ObjectId or string ID
     let patient;
@@ -144,8 +122,6 @@ router.get("/:id", async (req, res) => {
         patient_id: id,
       });
     }
-
-    console.log("📋 Patient found");
 
     res.status(200).json({
       success: true,

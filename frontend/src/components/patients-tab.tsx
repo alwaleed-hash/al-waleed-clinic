@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Calendar, Phone, MessageCircle } from "lucide-react";
+import { Calendar, Phone } from "lucide-react";
 import Loader from "./loader";
 import { type Patient, type PatientsApiResponse } from "../lib/types";
+import { getAppointmentStatus, getPatientStatusBadgeClass } from "../lib/utils";
 
 const PatientsTab: React.FC = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -33,25 +34,6 @@ const PatientsTab: React.FC = () => {
   const getPatientInitials = (phoneNumber: string): string => {
     // Extract last 2 digits of phone number for display
     return phoneNumber.slice(-2);
-  };
-
-  const getLastMessageTime = (patient: Patient): string => {
-    if (!patient.last_message_time) return "Never";
-
-    try {
-      const messageTime = new Date(patient.last_message_time);
-      const now = new Date();
-      const diffInMinutes = Math.floor(
-        (now.getTime() - messageTime.getTime()) / (1000 * 60)
-      );
-
-      if (diffInMinutes < 1) return "Just now";
-      if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-      if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
-      return `${Math.floor(diffInMinutes / 1440)}d ago`;
-    } catch {
-      return "Unknown";
-    }
   };
 
   if (loading) {
@@ -104,7 +86,13 @@ const PatientsTab: React.FC = () => {
           {patients.map((patient) => (
             <div
               key={patient._id}
-              className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow border border-gray-300"
+              className={`bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow border ${(() => {
+                const status = getAppointmentStatus(patient);
+                if (status.type === "urgent") return "border-red-300 bg-red-50";
+                if (status.type === "warning")
+                  return "border-yellow-300 bg-yellow-50";
+                return "border-gray-300";
+              })()}`}
             >
               {/* Header */}
               <div className="flex items-center justify-between mb-4">
@@ -136,14 +124,25 @@ const PatientsTab: React.FC = () => {
 
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <Calendar size={16} className="text-gray-400" />
-                  <span>
-                    Last visit: {patient.last_appointment_date || "null"}
-                  </span>
-                </div>
-
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                  <MessageCircle size={16} className="text-gray-400" />
-                  <span>Last message: {getLastMessageTime(patient)}</span>
+                  <div className="flex-1">
+                    <div className="flex flex-col space-y-1">
+                      <span>
+                        Last visit: {patient.last_appointment_date || "Never"}
+                      </span>
+                      {(() => {
+                        const status = getAppointmentStatus(patient);
+                        return status.type !== "normal" ? (
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium self-start ${getPatientStatusBadgeClass(
+                              status.type
+                            )}`}
+                          >
+                            {status.message}
+                          </span>
+                        ) : null;
+                      })()}
+                    </div>
+                  </div>
                 </div>
               </div>
 

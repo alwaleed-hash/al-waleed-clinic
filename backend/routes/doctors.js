@@ -6,13 +6,9 @@ const router = Router();
 // GET /api/doctors - Get all doctors
 router.get("/", async (req, res) => {
   try {
-    console.log("🔍 Fetching all doctors...");
-
     const db = getDb();
     const doctorsCollection = db.collection("doctors");
     const doctors = await doctorsCollection.find({}).toArray();
-
-    console.log(`📋 Found ${doctors.length} doctors`);
 
     res.status(200).json({
       success: true,
@@ -31,8 +27,6 @@ router.get("/", async (req, res) => {
 // GET /api/doctors/active - Get active doctors only
 router.get("/active", async (req, res) => {
   try {
-    console.log("🔍 Fetching active doctors...");
-
     const db = getDb();
     const doctorsCollection = db.collection("doctors");
 
@@ -41,8 +35,6 @@ router.get("/active", async (req, res) => {
         status: "active",
       })
       .toArray();
-
-    console.log(`📋 Found ${activeDoctors.length} active doctors`);
 
     res.status(200).json({
       success: true,
@@ -61,8 +53,6 @@ router.get("/active", async (req, res) => {
 // GET /api/doctors/available-today - Get doctors available today
 router.get("/available-today", async (req, res) => {
   try {
-    console.log("🔍 Fetching doctors available today...");
-
     const db = getDb();
     const doctorsCollection = db.collection("doctors");
 
@@ -70,7 +60,6 @@ router.get("/available-today", async (req, res) => {
     const today = new Date()
       .toLocaleDateString("en-US", { weekday: "long" })
       .toLowerCase();
-    console.log("📅 Today is:", today);
 
     const availableDoctors = await doctorsCollection
       .find({
@@ -78,8 +67,6 @@ router.get("/available-today", async (req, res) => {
         "availability.days": today,
       })
       .toArray();
-
-    console.log(`📋 Found ${availableDoctors.length} doctors available today`);
 
     res.status(200).json({
       success: true,
@@ -99,8 +86,6 @@ router.get("/available-today", async (req, res) => {
 // GET /api/doctors/search/:query - Search doctors by name
 router.get("/search/:query", async (req, res) => {
   try {
-    console.log("🔍 Searching doctors...");
-
     const db = getDb();
     const doctorsCollection = db.collection("doctors");
     const { query } = req.params;
@@ -111,8 +96,6 @@ router.get("/search/:query", async (req, res) => {
       });
     }
 
-    console.log("🔎 Search query:", query);
-
     // Create search regex for partial matching
     const searchRegex = new RegExp(query.trim(), "i");
 
@@ -121,8 +104,6 @@ router.get("/search/:query", async (req, res) => {
         name: searchRegex,
       })
       .toArray();
-
-    console.log(`📋 Found ${doctors.length} doctors matching "${query}"`);
 
     res.status(200).json({
       success: true,
@@ -142,8 +123,6 @@ router.get("/search/:query", async (req, res) => {
 // GET /api/doctors/:id - Get doctor by ID
 router.get("/:id", async (req, res) => {
   try {
-    console.log("🔍 Fetching doctor by ID...");
-
     const db = getDb();
     const doctorsCollection = db.collection("doctors");
     const { id } = req.params;
@@ -151,8 +130,6 @@ router.get("/:id", async (req, res) => {
     if (!id) {
       return res.status(400).json({ error: "Doctor ID is required" });
     }
-
-    console.log("🆔 Doctor ID:", id);
 
     // Try to find by ObjectId or string ID
     let doctor;
@@ -172,8 +149,6 @@ router.get("/:id", async (req, res) => {
       });
     }
 
-    console.log("📋 Doctor found:", doctor.name);
-
     res.status(200).json({
       success: true,
       doctor_id: id,
@@ -191,8 +166,6 @@ router.get("/:id", async (req, res) => {
 // GET /api/doctors/:id/appointments/today - Get today's appointments for a specific doctor
 router.get("/:id/appointments/today", async (req, res) => {
   try {
-    console.log("🔍 Fetching today's appointments for doctor...");
-
     const db = getDb();
     const bookingsCollection = db.collection("bookings");
     const { id } = req.params;
@@ -208,10 +181,7 @@ router.get("/:id/appointments/today", async (req, res) => {
       month: "long",
       day: "2-digit",
     });
-
-    console.log("🆔 Doctor ID:", id);
-    console.log("📅 Date:", todayFormatted);
-
+  
     // Find appointments for this doctor today
     const appointments = await bookingsCollection
       .find({
@@ -220,10 +190,6 @@ router.get("/:id/appointments/today", async (req, res) => {
       })
       .sort({ time: 1 })
       .toArray();
-
-    console.log(
-      `📋 Found ${appointments.length} appointments for doctor today`
-    );
 
     res.status(200).json({
       success: true,
@@ -244,8 +210,6 @@ router.get("/:id/appointments/today", async (req, res) => {
 // POST /api/doctors - Create a new doctor (for testing)
 router.post("/", async (req, res) => {
   try {
-    console.log("➕ Creating new doctor...");
-
     const db = getDb();
     const doctorsCollection = db.collection("doctors");
 
@@ -256,11 +220,6 @@ router.post("/", async (req, res) => {
       created_at: new Date(),
       updated_at: new Date(),
     };
-
-    console.log("📝 New doctor data:", {
-      name: newDoctor.name,
-      status: newDoctor.status,
-    });
 
     const result = await doctorsCollection.insertOne(newDoctor);
 
@@ -282,8 +241,6 @@ router.post("/", async (req, res) => {
 // GET /api/doctors/stats/summary - Get doctor statistics
 router.get("/stats/summary", async (req, res) => {
   try {
-    console.log("📊 Fetching doctor statistics...");
-
     const db = getDb();
     const doctorsCollection = db.collection("doctors");
     const bookingsCollection = db.collection("bookings");
@@ -325,8 +282,6 @@ router.get("/stats/summary", async (req, res) => {
       today_appointments: todayAppointments,
       current_day: today,
     };
-
-    console.log("📈 Doctor stats:", stats);
 
     res.status(200).json({
       success: true,

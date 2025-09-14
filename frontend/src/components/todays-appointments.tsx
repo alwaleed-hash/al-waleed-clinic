@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Loader from "./loader";
-import { getStatusBadgeClass } from "../lib/utils";
+import { getAppointmentStatusBadgeClass } from "../lib/utils";
 import { type Booking, type BookingsApiResponse } from "../lib/types";
 
 const TodayAppointments: React.FC = () => {
@@ -128,7 +128,11 @@ const TodayAppointments: React.FC = () => {
 
                   {/* Right side - Status */}
                   <div className="flex-shrink-0">
-                    <span className={getStatusBadgeClass(appointment.status)}>
+                    <span
+                      className={getAppointmentStatusBadgeClass(
+                        appointment.status
+                      )}
+                    >
                       {appointment.status}
                     </span>
                   </div>

@@ -1,4 +1,4 @@
-import { type Availability, type Doctor } from "./types";
+import { type Availability, type Doctor, type Patient } from "./types";
 
 export const getStatusColor = (status: string) => {
   switch (status) {
@@ -17,7 +17,7 @@ export const getStatusColor = (status: string) => {
   }
 };
 
-export const getStatusBadgeClass = (status: string): string => {
+export const getAppointmentStatusBadgeClass = (status: string): string => {
   const baseClasses =
     "px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide";
 
@@ -67,10 +67,77 @@ export const formatAvailability = (availability: Availability): string => {
 
   return `${days} • ${startTime} - ${endTime}`;
 };
-  
+
 export const isAvailableToday = (doctor: Doctor): boolean => {
   const today = new Date()
     .toLocaleDateString("en-US", { weekday: "long" })
     .toLowerCase();
   return doctor.availability.days.includes(today);
+};
+
+export const getAppointmentStatus = (
+  patient: Patient
+): {
+  message: string;
+  type: "normal" | "warning" | "urgent";
+  daysSince: number | null;
+} => {
+  if (
+    !patient.last_appointment_date ||
+    patient.last_appointment_date === "null"
+  ) {
+    return {
+      message: "No previous appointments",
+      type: "normal",
+      daysSince: null,
+    };
+  }
+
+  try {
+    // Parse the date format "September 06, 2025"
+    const lastAppointment = new Date(patient.last_appointment_date);
+    const now = new Date();
+    const diffInDays = Math.floor(
+      (now.getTime() - lastAppointment.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    if (diffInDays >= 40) {
+      return {
+        message: `No booking since ${diffInDays} days`,
+        type: "urgent",
+        daysSince: diffInDays,
+      };
+    } else if (diffInDays >= 30) {
+      return {
+        message: `No booking for ${diffInDays} days`,
+        type: "warning",
+        daysSince: diffInDays,
+      };
+    } else {
+      return {
+        message: "Recent appointment",
+        type: "normal",
+        daysSince: diffInDays,
+      };
+    }
+  } catch {
+    return {
+      message: "Invalid date",
+      type: "normal",
+      daysSince: null,
+    };
+  }
+};
+
+export const getPatientStatusBadgeClass = (
+  type: "normal" | "warning" | "urgent"
+): string => {
+  switch (type) {
+    case "warning":
+      return "bg-yellow-100 text-yellow-800 border border-yellow-200";
+    case "urgent":
+      return "bg-red-100 text-red-800 border border-red-200";
+    default:
+      return "";
+  }
 };
