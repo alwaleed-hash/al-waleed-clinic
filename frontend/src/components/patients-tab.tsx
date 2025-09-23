@@ -12,7 +12,9 @@ const PatientsTab: React.FC = () => {
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/patients");
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/patients`
+        );
 
         if (!response.ok) {
           throw new Error("Failed to fetch patients");

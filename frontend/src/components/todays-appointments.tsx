@@ -12,7 +12,7 @@ const TodayAppointments: React.FC = () => {
     const fetchTodayAppointments = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3000/api/bookings/today"
+          `${import.meta.env.VITE_BACKEND_URL}/api/bookings/today`
         );
 
         if (!response.ok) {

@@ -13,39 +13,35 @@ const port = process.env.PORT || 3000;
 
 // CORS configuration
 const corsOptions = {
-  origin: [
-    "http://localhost:5173", // Vite default
-    // Add your production frontend URL here
-    // "https://your-frontend-domain.com"
-  ],
+  origin: [process.env.FRONTEND_URL || "http://localhost:5173"],
   credentials: true,
   optionsSuccessStatus: 200,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
 };
 
 // Apply CORS middleware
 app.use(cors(corsOptions));
 
 // Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Health check endpoint
 app.get("/", (req, res) => {
-  res.json({ 
+  res.json({
     message: "Al-Waleed Dental Clinic API is running!",
     status: "healthy",
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 });
 
 // API health check
 app.get("/api/health", (req, res) => {
-  res.json({ 
-    status: "OK", 
+  res.json({
+    status: "OK",
     uptime: process.uptime(),
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 });
 
@@ -54,30 +50,24 @@ async function startServer() {
     // Connect to database first
     await connectDb();
     console.log("✅ Connected to MongoDB successfully");
-    
+
     // Register routes after DB connection
     app.use("/api/bookings", bookingsRouter);
     app.use("/api/patients", patientsRouter);
     app.use("/api/doctors", doctorsRouter);
-    
+
     // Error handling middleware (should be after routes)
     app.use((err, req, res, next) => {
       console.error("Error:", err.stack);
-      res.status(500).json({ 
+      res.status(500).json({
         error: "Something went wrong!",
-        message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+        message:
+          process.env.NODE_ENV === "development"
+            ? err.message
+            : "Internal server error",
       });
     });
-    
-    // // 404 handler for unmatched routes
-    // app.all("*", (req, res) => {
-    //   res.status(404).json({ 
-    //     error: "Route not found",
-    //     path: req.originalUrl,
-    //     method: req.method
-    //   });
-    // });
-    
+
     // Start the server
     app.listen(port, () => {
       console.log(`🚀 Server running on http://localhost:${port}`);
@@ -89,13 +79,13 @@ async function startServer() {
 }
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('🛑 SIGTERM received, shutting down gracefully');
+process.on("SIGTERM", () => {
+  console.log("🛑 SIGTERM received, shutting down gracefully");
   process.exit(0);
 });
 
-process.on('SIGINT', () => {
-  console.log('🛑 SIGINT received, shutting down gracefully');
+process.on("SIGINT", () => {
+  console.log("🛑 SIGINT received, shutting down gracefully");
   process.exit(0);
 });
 

@@ -11,7 +11,9 @@ const DoctorsTab: React.FC = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/doctors");
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/doctors`
+        );
 
         if (!response.ok) {
           throw new Error("Failed to fetch doctors");
@@ -47,9 +49,7 @@ const DoctorsTab: React.FC = () => {
   };
 
   const getDoctorInitials = (name: string): string => {
-    console.log("the name is", name);
     const match = name.match(/Dr\.\s*(\w)/i);
-    console.log("the match is", match);
     return match ? match[1].toUpperCase() : name.charAt(0).toUpperCase();
   };
 

@@ -22,7 +22,6 @@ export const connectDb = async () => {
     
     // List all collections for debugging
     const collections = await db.listCollections().toArray();
-    console.log("📚 Available collections:", collections.map(c => c.name));
     
     return db;
   } catch (error) {
