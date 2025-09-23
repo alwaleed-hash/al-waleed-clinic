@@ -30,22 +30,19 @@ router.get("/today", async (req, res) => {
     const db = getDb();
     const bookingsCollection = db.collection("bookings");
 
-    // Get today's date in the same format as stored in DB
+    // Format today's date as "YYYY-MM-DD"
     const today = new Date();
-    const todayFormatted = today.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "2-digit",
-    });
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    const todayFormatted = `${yyyy}-${mm}-${dd}`;
 
-    // Method 1: Query by the formatted date string
+    // Query 1: Find bookings where "date" field matches today
     const bookingsByDate = await bookingsCollection
-      .find({
-        date: todayFormatted,
-      })
+      .find({ date: todayFormatted })
       .toArray();
 
-    // Method 2: Also query by start date (in case date field is missing)
+    // Query 2: Find bookings where "start" is within today (ISO timestamps)
     const startOfDay = new Date(today);
     startOfDay.setHours(0, 0, 0, 0);
 
@@ -61,7 +58,7 @@ router.get("/today", async (req, res) => {
       })
       .toArray();
 
-    // Combine both results and remove duplicates
+    // Combine both results, removing duplicates
     const allTodayBookings = [...bookingsByDate];
 
     // Add bookings from start date query that aren't already included
@@ -75,7 +72,7 @@ router.get("/today", async (req, res) => {
       }
     });
 
-    // Sort by start time
+    // Sort by start time or fallback to 'time' string
     allTodayBookings.sort((a, b) => {
       if (a.start && b.start) {
         return new Date(a.start) - new Date(b.start);
