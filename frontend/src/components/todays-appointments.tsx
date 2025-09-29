@@ -125,7 +125,6 @@ const TodayAppointments: React.FC = () => {
                       </div>
                     </div>
                   </div>
-
                   {/* Right side - Status */}
                   <div className="flex-shrink-0">
                     <span
@@ -137,59 +136,8 @@ const TodayAppointments: React.FC = () => {
                     </span>
                   </div>
                 </div>
-                )
               </div>
             ))}
-          </div>
-        )}
-
-        {/* Quick Stats */}
-        {appointments.length > 0 && (
-          <div className="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Today's Summary
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-[#1c3f60]">
-                  {appointments.length}
-                </div>
-                <div className="text-sm text-gray-600">Total</div>
-              </div>
-
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">
-                  {
-                    appointments.filter(
-                      (apt) => apt.status.toLowerCase() === "confirmed"
-                    ).length
-                  }
-                </div>
-                <div className="text-sm text-gray-600">Confirmed</div>
-              </div>
-
-              <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-600">
-                  {
-                    appointments.filter(
-                      (apt) => apt.status.toLowerCase() === "pending"
-                    ).length
-                  }
-                </div>
-                <div className="text-sm text-gray-600">Pending</div>
-              </div>
-
-              <div className="text-center">
-                <div className="text-2xl font-bold text-[#1c3f60]">
-                  {
-                    appointments.filter(
-                      (apt) => apt.status.toLowerCase() === "in-progress"
-                    ).length
-                  }
-                </div>
-                <div className="text-sm text-gray-600">In Progress</div>
-              </div>
-            </div>
           </div>
         )}
       </div>

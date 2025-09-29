@@ -49,7 +49,6 @@ async function startServer() {
   try {
     // Connect to database first
     await connectDb();
-    console.log("✅ Connected to MongoDB successfully");
 
     // Register routes after DB connection
     app.use("/api/bookings", bookingsRouter);
